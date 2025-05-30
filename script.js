@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update AOI input when GeoJSON is pasted manually (and no drawing is active)
     aoiInput.addEventListener('input', () => {
         if (aoiInput.value.trim() !== '') {
+            // Clear map drawings if GeoJSON is manually entered, to prioritize manual input
             drawnItems.clearLayers();
             updateDroidStatus("GEE-Droid : Protocole GeoJSON détecté. Vérification de la syntaxe...", 50);
         } else {
@@ -228,31 +229,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
         const targetMonth = targetMonthSelect.value;
-        let aoi = aoiInput.value.trim();
+        let aoiRaw = aoiInput.value.trim(); // Raw GeoJSON string
         const satelliteSource = satelliteSourceSelect.value;
         const cloudFilterPercentage = document.getElementById('cloudFilter')?.value || 10;
         const maxCloudCover = parseFloat(cloudFilterPercentage) / 100;
 
-        try {
-            const parsedAoi = JSON.parse(aoi);
-            if (!['FeatureCollection', 'Feature', 'Geometry'].includes(parsedAoi.type)) {
-                aoi = `// ERREUR: GeoJSON invalide. Veuillez coller un GeoJSON valide ici ou dessiner sur la carte.
-var aoi = ee.Geometry.Point([0, 0]); // Point par défaut en cas d'erreur
-print("ERREUR: GeoJSON non valide. Veuillez vérifier votre saisie ou le tracé sur la carte.");`;
-                updateDroidStatus("GEE-Droid : Erreur GeoJSON - Format non reconnu. Veuillez corriger.", 100);
-            } else {
-                aoi = `var aoi = ee.FeatureCollection(${JSON.stringify(parsedAoi)}); // Zone d'Intérêt (AOI) définie par l'utilisateur`;
-                if (parsedAoi.type === 'Geometry') {
-                     aoi = `var aoi = ee.FeatureCollection([ee.Feature(${JSON.stringify(parsedAoi)})]); // Géométrie convertie en FeatureCollection pour Earth Engine`;
+        let aoiScript = '';
+        if (aoiRaw === '') {
+            aoiScript = `// Zone d'Intérêt (AOI) non définie. Utilisation d'un point par défaut ou erreur.
+var aoi = ee.Geometry.Point([0, 0]);
+print("GEE-Droid Alerte : AOI non définie. Utilisation d'un point par défaut. Dessinez sur la carte ou collez un GeoJSON.");`;
+            updateDroidStatus("GEE-Droid : AOI non définie. Point par défaut utilisé.", 100);
+        } else {
+            try {
+                const parsedAoi = JSON.parse(aoiRaw);
+                let eeObjectCreation;
+
+                // Determine the correct ee.Geometry or ee.FeatureCollection creation
+                if (parsedAoi.type === 'FeatureCollection') {
+                    eeObjectCreation = `ee.FeatureCollection(${JSON.stringify(parsedAoi)})`;
+                } else if (parsedAoi.type === 'Feature') {
+                    eeObjectCreation = `ee.FeatureCollection([ee.Feature(${JSON.stringify(parsedAoi)})])`;
+                } else if (parsedAoi.type === 'Geometry') {
+                    eeObjectCreation = `ee.FeatureCollection([ee.Feature(${JSON.stringify(parsedAoi)})])`;
+                } else {
+                    throw new Error("Type GeoJSON non reconnu. Doit être Geometry, Feature ou FeatureCollection.");
                 }
+
+                aoiScript = `var aoi = ${eeObjectCreation}; // Zone d'Intérêt (AOI) définie par l'utilisateur`;
                 updateDroidStatus("GEE-Droid : GeoJSON validé. Initialisation des capteurs.", 20);
-            }
-        } catch (e) {
-            aoi = `// ERREUR: GeoJSON invalide ou mal formaté. Veuillez coller un GeoJSON valide ici ou dessiner sur la carte.
+
+            } catch (e) {
+                aoiScript = `// ERREUR: GeoJSON invalide ou mal formaté. Veuillez coller un GeoJSON valide ici ou dessiner sur la carte.
 var aoi = ee.Geometry.Point([0, 0]); // Point par défaut en cas d'erreur
-print("ERREUR: GeoJSON mal formaté. Détails: ${e.message.replace(/"/g, '\\"')}");`; // Escape double quotes for GEE print
-            updateDroidStatus(`GEE-Droid : Erreur GeoJSON - Problème de formatage. Détails: ${e.message.substring(0, 50)}...`, 100);
+print("GEE-Droid Erreur: GeoJSON mal formaté. Détails: ${e.message.replace(/"/g, '\\"')}.");`;
+                updateDroidStatus(`GEE-Droid : Erreur GeoJSON - Problème de formatage. Détails: ${e.message.substring(0, 50)}...`, 100);
+            }
         }
+
 
         let script = `
 // Script Google Earth Engine généré par GEE-Droid
@@ -260,7 +274,7 @@ print("ERREUR: GeoJSON mal formaté. Détails: ${e.message.replace(/"/g, '\\"')}
 // Analyse sélectionnée : ${analysisTypeSelect.options[analysisTypeSelect.selectedIndex].text}
 
 // 1. Définir la Zone d'Intérêt (AOI)
-${aoi}
+${aoiScript}
 
 // Centrer l'affichage cartographique sur l'AOI
 Map.centerObject(aoi, 10); // Ajustez le niveau de zoom si nécessaire
@@ -365,7 +379,8 @@ if ('${satelliteSource}' === 'S2') {
     };
 }
 
-if (collection.size().getInfo() === 0) { // Corrected error: using .getInfo() for client-side check
+// Assurez-vous que la collection est bien définie avant d'appeler getInfo()
+if (collection && collection.size().getInfo() === 0) { // Corrected error: using .getInfo() for client-side check
     print("GEE-Droid Alerte : Aucune image satellite disponible après filtrage. Veuillez ajuster la période, l'AOI ou le filtre nuageux.");
 } else {
     print('GEE-Droid Statut : ' + collection.size() + ' images disponibles pour traitement après filtrage atmosphérique.');
@@ -413,7 +428,7 @@ if (collection.size().getInfo() === 0) { // Corrected error: using .getInfo() fo
     var desertIndex;
     var visParams;
 
-    // Pour les analyses de changement, nous utilisons deux composites médians (début et fin de la période globale ou spécifique au mois cible)
+    // Pour les analyses de changement, nous utilisons deux composites médianes (début et fin de la période globale ou spécifique au mois cible)
     var compositeBefore, compositeAfter;
 
     if (targetMonth === 'all') {
