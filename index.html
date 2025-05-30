@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEE-Droid: Unité d'Analyse Géospatiale</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="droid-shell">
+        <header class="droid-visor">
+            <div class="droid-optic"></div>
+            <div class="droid-title">GEE-Droid</div>
+            <div class="droid-subtitle">Votre Unité d'Analyse Géospatiale</div>
+        </header>
+
+        <section class="droid-panel">
+            <h2><span class="panel-icon">▨</span> Sélection d'Analyse</h2>
+            <div class="input-group">
+                <label for="analysisType">Type d'analyse spatiale :</label>
+                <select id="analysisType" class="droid-select">
+                    <option value="">-- Veuillez choisir --</option>
+                    <option value="desertification">Évaluation de la Dégradation des Terres</option>
+                    <option value="waterStress">Détection du Stress Hydrique</option>
+                    <option value="cropMonitoring">Suivi de la Santé des Cultures</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="droid-panel" id="parametersSection" style="display: none;">
+            <h2><span class="panel-icon">▧</span> Réglages des Capteurs</h2>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="startDate">Période d'étude (début) :</label>
+                    <input type="date" id="startDate" class="droid-input" value="2023-01-01">
+                </div>
+                <div class="input-group">
+                    <label for="endDate">Période d'étude (fin) :</label>
+                    <input type="date" id="endDate" class="droid-input" value="2023-12-31">
+                </div>
+                <div class="input-group">
+                    <label for="targetMonth">Mois spécifique (optionnel) :</label>
+                    <select id="targetMonth" class="droid-select">
+                        <option value="all">Tous les mois (médiane sur la période)</option>
+                        <option value="1">Janvier</option>
+                        <option value="2">Février</option>
+                        <option value="3">Mars</option>
+                        <option value="4">Avril</option>
+                        <option value="5">Mai</option>
+                        <option value="6">Juin</option>
+                        <option value="7">Juillet</option>
+                        <option value="8">Août</option>
+                        <option value="9">Septembre</option>
+                        <option value="10">Octobre</option>
+                        <option value="11">Novembre</option>
+                        <option value="12">Décembre</option>
+                    </select>
+                    <small class="info-text">Permet d'analyser un mois précis sur l'ensemble de la période sélectionnée (ex: comparer des périodes sèches).</small>
+                </div>
+                <div class="input-group full-width">
+                    <label>Zone d'Intérêt (AOI) :</label>
+                    <p class="info-text">Dessinez votre zone directement sur la carte ou collez un GeoJSON.</p>
+                    <div id="map" class="droid-map"></div>
+                    <textarea id="aoiInput" rows="5" class="droid-textarea" placeholder='Collez un GeoJSON ici (FeatureCollection, Feature ou Geometry). Le dessin sur carte sera utilisé en priorité.' readonly></textarea>
+                    <button id="clearMapButton" class="droid-button danger-button">Effacer le tracé</button>
+                </div>
+                <div class="input-group">
+                    <label for="satelliteSource">Source d'images satellite :</label>
+                    <select id="satelliteSource" class="droid-select">
+                        <option value="S2">Sentinel-2 (Pour les détails)</option>
+                        <option value="L8">Landsat 8 (Pour les données historiques)</option>
+                        <option value="MODIS">MODIS (Pour les grandes zones et la fréquence)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="specificParams" class="specific-params-area">
+                </div>
+        </section>
+
+        <section class="droid-panel" id="scriptOutputSection" style="display: none;">
+            <h2><span class="panel-icon">▨</span> Génération du Script GEE</h2>
+            <div class="status-display">
+                <p id="droidStatus">GEE-Droid : Prêt pour la transmission.</p>
+                <div class="progress-bar-container" style="display:none;">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            <textarea id="geeScriptOutput" rows="20" class="droid-code-output" readonly></textarea>
+            <button id="copyScriptButton" class="droid-button success-button">Copier le Script</button>
+            <p class="warning-message">**Attention :** Vérifiez toujours le GeoJSON et vos permissions dans GEE.</p>
+        </section>
+
+        <footer class="droid-base">
+            <p>GEE-Droid Unité de Service (Version 1.0) - Prêt à vous aider.</p>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
