@@ -1,0 +1,380 @@
+/* Variables pour les couleurs et textures */
+:root {
+    --droid-bg-main: #3d3a3a; /* Gris foncé, presque marron/métallique */
+    --droid-panel-bg: #4c4a4a; /* Gris un peu plus clair pour les panneaux */
+    --droid-text-main: #e0e0e0; /* Texte gris clair */
+    --droid-accent-yellow: #f0c040; /* Jaune/orange désaturé pour les accents */
+    --droid-accent-green: #70a070; /* Vert désaturé pour succès/actif */
+    --droid-accent-red: #c06060; /* Rouge désaturé pour erreurs/danger */
+    --droid-border-color: #5c5959; /* Couleur de bordure */
+    --droid-shadow-color: rgba(0, 0, 0, 0.5);
+    --droid-code-bg: #2a2828; /* Fond pour le code, plus foncé */
+    --droid-info-text: #b0b0b0; /* Texte d'information plus doux */
+    --droid-rust-texture: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><rect width="100" height="100" fill="%233d3a3a"/><circle cx="20" cy="20" r="15" fill="%232a2828"/><circle cx="80" cy="80" r="15" fill="%232a2828"/><circle cx="50" cy="50" r="10" fill="%232a2828"/></svg>');
+    --droid-scratch-texture: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.05"><line x1="0" y1="10" x2="100" y2="0" stroke="%23e0e0e0" stroke-width="1" stroke-dasharray="2 4"/><line x1="100" y1="30" x2="0" y2="20" stroke="%23e0e0e0" stroke-width="1" stroke-dasharray="2 4"/></svg>');
+}
+
+body {
+    font-family: 'Space Mono', monospace; /* Police monospace pour le corps */
+    margin: 0;
+    padding: 0;
+    background-color: var(--droid-bg-main);
+    background-image: var(--droid-rust-texture), var(--droid-scratch-texture); /* Textures d'usure */
+    color: var(--droid-text-main);
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-y: auto;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Légère ombre pour la lisibilité */
+}
+
+.droid-shell {
+    max-width: 950px;
+    width: 95%;
+    margin: 30px auto;
+    background: var(--droid-panel-bg);
+    border: 2px solid var(--droid-border-color);
+    border-radius: 15px; /* Coins légèrement arrondis */
+    box-shadow: 0 0 20px var(--droid-shadow-color);
+    overflow: hidden;
+    position: relative; /* Pour la texture */
+}
+
+/* Texture globale pour le boîtier du droïde */
+.droid-shell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--droid-scratch-texture);
+    pointer-events: none; /* Permet d'interagir avec les éléments en dessous */
+    z-index: 1;
+}
+
+.droid-visor {
+    background-color: var(--droid-bg-main);
+    padding: 20px 30px;
+    text-align: center;
+    border-bottom: 2px solid var(--droid-border-color);
+    position: relative;
+    overflow: hidden;
+    /* Effet scanline */
+    background-image: linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 100% 3px;
+    background-position: 0 0;
+    animation: scanline 8s infinite linear;
+}
+
+@keyframes scanline {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 0% 100%; }
+}
+
+.droid-optic {
+    width: 20px;
+    height: 20px;
+    background-color: var(--droid-accent-yellow);
+    border-radius: 50%;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    box-shadow: 0 0 10px var(--droid-accent-yellow), inset 0 0 5px rgba(255,255,0,0.5);
+}
+
+
+.droid-title {
+    font-family: 'Press Start 2P', cursive; /* Style pixelisé, très retro */
+    font-size: 2.2em;
+    font-weight: 400;
+    color: var(--droid-accent-yellow);
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px var(--droid-accent-yellow);
+    margin-bottom: 5px;
+}
+
+.droid-subtitle {
+    font-family: 'VT323', monospace; /* Police plus fine pour les sous-titres */
+    font-size: 1.1em;
+    color: var(--droid-info-text);
+    opacity: 0.8;
+}
+
+.droid-panel {
+    padding: 25px 30px;
+    margin-bottom: 15px;
+    background-color: var(--droid-panel-bg);
+    border-bottom: 1px dashed var(--droid-border-color); /* Bordures "usées" */
+    position: relative;
+    z-index: 2; /* Au-dessus de la texture de fond */
+}
+
+.droid-panel:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+h2 {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--droid-accent-yellow);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    text-shadow: 0 0 5px var(--droid-accent-yellow);
+}
+
+.panel-icon {
+    margin-right: 10px;
+    font-size: 1em;
+    color: var(--droid-accent-green); /* Icônes en vert, comme un indicateur */
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.input-group.full-width {
+    grid-column: 1 / -1;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 700;
+    color: var(--droid-text-main);
+    font-size: 0.95em;
+    text-transform: uppercase;
+}
+
+.droid-input,
+.droid-select,
+.droid-textarea {
+    width: calc(100% - 18px); /* Adjust for padding and border */
+    padding: 8px;
+    background-color: var(--droid-code-bg);
+    border: 1px solid var(--droid-border-color);
+    border-radius: 4px;
+    color: var(--droid-accent-green); /* Texte dans les champs en vert */
+    font-family: 'VT323', monospace; /* Police rétro pour les saisies */
+    font-size: 1.1em;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    /* Effet "scanline" discret pour les champs */
+    background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 100% 2px;
+}
+
+.droid-input:focus,
+.droid-select:focus,
+.droid-textarea:focus {
+    outline: none;
+    border-color: var(--droid-accent-yellow);
+    box-shadow: 0 0 8px var(--droid-accent-yellow);
+}
+
+.droid-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.droid-map {
+    height: 350px;
+    width: 100%;
+    border: 2px solid var(--droid-border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+    background-color: #2a2828; /* Fond foncé pour la carte */
+}
+
+.droid-button {
+    background-color: var(--droid-accent-yellow);
+    color: var(--droid-bg-main);
+    padding: 10px 20px;
+    border: 1px solid var(--droid-border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 700;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.4); /* Ombre pour donner du relief */
+}
+
+.droid-button:hover {
+    background-color: #e0b030; /* Jaune légèrement plus foncé */
+    box-shadow: 0 0 10px var(--droid-accent-yellow), 0 0 15px var(--droid-accent-yellow);
+    transform: translateY(-1px);
+}
+
+.success-button {
+    background-color: var(--droid-accent-green);
+    color: var(--droid-bg-main);
+}
+
+.success-button:hover {
+    background-color: #609060;
+    box-shadow: 0 0 10px var(--droid-accent-green), 0 0 15px var(--droid-accent-green);
+}
+
+.danger-button {
+    background-color: var(--droid-accent-red);
+    color: var(--droid-bg-main);
+    margin-left: 10px;
+}
+
+.danger-button:hover {
+    background-color: #a05050;
+    box-shadow: 0 0 10px var(--droid-accent-red), 0 0 15px var(--droid-accent-red);
+}
+
+.droid-code-output {
+    background-color: var(--droid-code-bg);
+    color: var(--droid-accent-green);
+    font-family: 'VT323', monospace;
+    font-size: 1em;
+    padding: 15px;
+    border: 1px solid var(--droid-border-color);
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    box-shadow: inset 0 0 8px rgba(112, 160, 112, 0.2);
+    min-height: 250px;
+    /* Effet "scanline" pour le code */
+    background-image: linear-gradient(transparent 50%, rgba(0,0,0,0.1) 50%);
+    background-size: 100% 2px;
+}
+
+.info-text {
+    font-size: 0.85em;
+    color: var(--droid-info-text);
+    margin-top: 5px;
+    display: block;
+    opacity: 0.9;
+}
+
+.warning-message {
+    color: var(--droid-accent-red);
+    font-weight: 700;
+    margin-top: 20px;
+    text-align: center;
+    background-color: rgba(192, 96, 96, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--droid-accent-red);
+}
+
+.specific-params-area {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--droid-border-color);
+}
+
+.droid-base {
+    text-align: center;
+    padding: 15px 30px;
+    background-color: var(--droid-bg-main);
+    color: var(--droid-info-text);
+    font-size: 0.8em;
+    border-top: 2px solid var(--droid-border-color);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+/* --- Styles pour les messages d'état et barres de progression --- */
+.status-display {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: var(--droid-code-bg);
+    border: 1px solid var(--droid-border-color);
+    border-radius: 5px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+}
+
+#droidStatus {
+    font-family: 'VT323', monospace;
+    color: var(--droid-accent-green);
+    font-size: 1.2em;
+    margin: 0;
+    text-shadow: 0 0 5px var(--droid-accent-green);
+}
+
+.progress-bar-container {
+    width: 80%;
+    margin: 10px auto 0;
+    background-color: #3d3a3a;
+    border: 1px solid var(--droid-border-color);
+    border-radius: 3px;
+    overflow: hidden;
+    height: 15px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: var(--droid-accent-yellow);
+    border-right: 1px solid var(--droid-text-main); /* Effet de séparation */
+    transition: width 0.4s ease-out;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    /* Animation clignotante discrète */
+    animation: pulse-progress 1.5s infinite alternate;
+}
+
+@keyframes pulse-progress {
+    0% { background-color: var(--droid-accent-yellow); }
+    100% { background-color: #f0d060; } /* Légèrement plus clair */
+}
+
+
+/* Override Leaflet Draw & controls styles */
+.leaflet-draw-toolbar a,
+.leaflet-control-zoom a {
+    background-color: var(--droid-panel-bg) !important;
+    color: var(--droid-text-main) !important;
+    border: 1px solid var(--droid-border-color) !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.leaflet-draw-toolbar a:hover,
+.leaflet-control-zoom a:hover {
+    background-color: var(--droid-border-color) !important;
+    color: var(--droid-accent-yellow) !important;
+    box-shadow: 0 0 8px rgba(240, 192, 64, 0.5) !important;
+}
+
+.leaflet-draw-toolbar .leaflet-draw-toolbar-top,
+.leaflet-draw-toolbar .leaflet-draw-edit-remove {
+    background-color: var(--droid-panel-bg) !important;
+    border: 1px solid var(--droid-border-color) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 0 10px var(--droid-shadow-color) !important;
+    padding: 5px !important;
+}
+
+/* Ensure map tiles remain visible and don't get themed */
+.leaflet-tile-pane {
+    filter: invert(0) hue-rotate(0deg) saturate(1) brightness(1) contrast(1) !important;
+}
+
+/* Pour le texte readonly */
+.droid-input[readonly], .droid-textarea[readonly] {
+    opacity: 0.7;
+    cursor: default;
+    background-color: var(--droid-code-bg);
+}
