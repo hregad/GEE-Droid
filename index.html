@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEE-Droid: Unité d'Analyse Géospatiale</title>
+    <title>GEE-Droid: Console d'Analyse Géospatiale</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="droid-shell">
-        <header class="droid-visor">
-            <div class="droid-optic"></div>
-            <div class="droid-title">GEE-Droid</div>
-            <div class="droid-subtitle">Votre Unité d'Analyse Géospatiale</div>
+    <div class="console-container">
+        <header class="console-header">
+            <div class="console-logo">GEE-Droid</div>
+            <div class="console-subtitle">Console d'Analyse Géospatiale Avancée</div>
+            <a href="https://code.earthengine.google.com/" target="_blank" class="gee-editor-link">Accéder à l'Éditeur GEE <span class="arrow">→</span></a>
         </header>
 
-        <section class="droid-panel">
-            <h2><span class="panel-icon">▨</span> Sélection d'Analyse</h2>
+        <section class="console-panel">
+            <h2><span class="icon">✨</span> Sélection d'Analyse</h2>
             <div class="input-group">
-                <label for="analysisType">Type d'analyse spatiale :</label>
-                <select id="analysisType" class="droid-select">
-                    <option value="">-- Veuillez choisir --</option>
+                <label for="analysisType">Protocole d'Analyse :</label>
+                <select id="analysisType" class="console-select">
+                    <option value="">-- Initialiser le Protocole --</option>
                     <option value="desertification">Évaluation de la Dégradation des Terres</option>
                     <option value="waterStress">Détection du Stress Hydrique</option>
                     <option value="cropMonitoring">Suivi de la Santé des Cultures</option>
@@ -30,20 +30,20 @@
             </div>
         </section>
 
-        <section class="droid-panel" id="parametersSection" style="display: none;">
-            <h2><span class="panel-icon">▧</span> Réglages des Capteurs</h2>
+        <section class="console-panel" id="parametersSection" style="display: none;">
+            <h2><span class="icon">⚙️</span> Paramètres de Calibrage</h2>
             <div class="input-grid">
                 <div class="input-group">
                     <label for="startDate">Période d'étude (début) :</label>
-                    <input type="date" id="startDate" class="droid-input" value="2023-01-01">
+                    <input type="date" id="startDate" class="console-input" value="2023-01-01">
                 </div>
                 <div class="input-group">
                     <label for="endDate">Période d'étude (fin) :</label>
-                    <input type="date" id="endDate" class="droid-input" value="2023-12-31">
+                    <input type="date" id="endDate" class="console-input" value="2023-12-31">
                 </div>
                 <div class="input-group">
                     <label for="targetMonth">Mois spécifique (optionnel) :</label>
-                    <select id="targetMonth" class="droid-select">
+                    <select id="targetMonth" class="console-select">
                         <option value="all">Tous les mois (médiane sur la période)</option>
                         <option value="1">Janvier</option>
                         <option value="2">Février</option>
@@ -58,21 +58,21 @@
                         <option value="11">Novembre</option>
                         <option value="12">Décembre</option>
                     </select>
-                    <small class="info-text">Permet d'analyser un mois précis sur l'ensemble de la période sélectionnée (ex: comparer des périodes sèches).</small>
+                    <small class="info-text">Permet d'analyser un mois précis sur l'ensemble de la période sélectionnée.</small>
                 </div>
                 <div class="input-group full-width">
                     <label>Zone d'Intérêt (AOI) :</label>
                     <p class="info-text">Dessinez votre zone directement sur la carte ou collez un GeoJSON.</p>
-                    <div id="map" class="droid-map"></div>
-                    <textarea id="aoiInput" rows="5" class="droid-textarea" placeholder='Collez un GeoJSON ici (FeatureCollection, Feature ou Geometry). Le dessin sur carte sera utilisé en priorité.' readonly></textarea>
-                    <button id="clearMapButton" class="droid-button danger-button">Effacer le tracé</button>
+                    <div id="map" class="console-map"></div>
+                    <textarea id="aoiInput" rows="5" class="console-textarea" placeholder='Collez un GeoJSON ici (FeatureCollection, Feature ou Geometry). Le dessin sur carte sera utilisé en priorité.' readonly></textarea>
+                    <button id="clearMapButton" class="console-button button-danger">Effacer le tracé</button>
                 </div>
                 <div class="input-group">
                     <label for="satelliteSource">Source d'images satellite :</label>
-                    <select id="satelliteSource" class="droid-select">
-                        <option value="S2">Sentinel-2 (Pour les détails)</option>
-                        <option value="L8">Landsat 8 (Pour les données historiques)</option>
-                        <option value="MODIS">MODIS (Pour les grandes zones et la fréquence)</option>
+                    <select id="satelliteSource" class="console-select">
+                        <option value="S2">Sentinel-2 (Haute résolution)</option>
+                        <option value="L8">Landsat 8 (Données historiques)</option>
+                        <option value="MODIS">MODIS (Couverture étendue)</option>
                     </select>
                 </div>
             </div>
@@ -81,21 +81,21 @@
                 </div>
         </section>
 
-        <section class="droid-panel" id="scriptOutputSection" style="display: none;">
-            <h2><span class="panel-icon">▨</span> Génération du Script GEE</h2>
+        <section class="console-panel" id="scriptOutputSection" style="display: none;">
+            <h2><span class="icon">💻</span> Génération du Script GEE</h2>
             <div class="status-display">
-                <p id="droidStatus">GEE-Droid : Prêt pour la transmission.</p>
+                <p id="droidStatus">GEE-Droid : Système en ligne. Prêt à recevoir les commandes.</p>
                 <div class="progress-bar-container" style="display:none;">
                     <div class="progress-bar" id="progressBar"></div>
                 </div>
             </div>
-            <textarea id="geeScriptOutput" rows="20" class="droid-code-output" readonly></textarea>
-            <button id="copyScriptButton" class="droid-button success-button">Copier le Script</button>
-            <p class="warning-message">**Attention :** Vérifiez toujours le GeoJSON et vos permissions dans GEE.</p>
+            <textarea id="geeScriptOutput" rows="20" class="console-code-output" readonly></textarea>
+            <button id="copyScriptButton" class="console-button button-success">Copier le Script</button>
+            <p class="warning-message">**Avertissement :** Vérifiez toujours le GeoJSON et vos permissions dans GEE.</p>
         </section>
 
-        <footer class="droid-base">
-            <p>GEE-Droid Unité de Service (Version 1.0) - Prêt à vous aider.</p>
+        <footer class="console-footer">
+            <p>© 2025 GEE-Droid. Tous droits réservés. Unité d'Analyse Géospatiale.</p>
         </footer>
     </div>
 
