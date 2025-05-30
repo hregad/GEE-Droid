@@ -76,16 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
         drawnItems.clearLayers();
         aoiInput.value = '';
         generateScript();
-        updateDroidStatus("Tracé cartographique effacé. Attente de nouvelles coordonnées.", 0);
+        updateDroidStatus("GEE-Droid : Tracé cartographique effacé. Attente de nouvelles coordonnées.", 0);
     });
 
     // Update AOI input when GeoJSON is pasted manually (and no drawing is active)
     aoiInput.addEventListener('input', () => {
         if (aoiInput.value.trim() !== '') {
             drawnItems.clearLayers();
-            updateDroidStatus("GeoJSON détecté. Vérification de la syntaxe...", 50);
+            updateDroidStatus("GEE-Droid : Protocole GeoJSON détecté. Vérification de la syntaxe...", 50);
         } else {
-             updateDroidStatus("Champ GeoJSON vide. Prêt pour le tracé ou la saisie.", 0);
+             updateDroidStatus("GEE-Droid : Champ GeoJSON vide. Prêt pour le tracé ou la saisie.", 0);
         }
         generateScript();
     });
@@ -107,21 +107,21 @@ document.addEventListener('DOMContentLoaded', () => {
             parametersSection.style.display = 'block';
             scriptOutputSection.style.display = 'block';
             updateSpecificParams(selectedAnalysis);
-            updateDroidStatus(`Analyse "${analysisTypeSelect.options[analysisTypeSelect.selectedIndex].text}" sélectionnée. Réglage des modules.`, 20);
+            updateDroidStatus(`GEE-Droid : Analyse "${analysisTypeSelect.options[analysisTypeSelect.selectedIndex].text}" sélectionnée. Réglage des modules.`, 20);
             generateScript();
         } else {
             parametersSection.style.display = 'none';
             scriptOutputSection.style.display = 'none';
             specificParamsDiv.innerHTML = '';
             geeScriptOutput.value = '';
-            updateDroidStatus("GEE-Droid : En attente de commande.", 0);
+            updateDroidStatus("GEE-Droid : Système en ligne. En attente de commande.", 0);
         }
     });
 
     // Event listeners for common parameters to trigger script generation
     [startDateInput, endDateInput, targetMonthSelect, satelliteSourceSelect].forEach(input => {
         input.addEventListener('input', () => {
-            updateDroidStatus("Paramètres ajustés. Recalcul du protocole.", 30);
+            updateDroidStatus("GEE-Droid : Paramètres ajustés. Recalcul du protocole.", 30);
             generateScript();
         });
     });
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to update AOI input from map drawing
     function updateAoiInput(geoJson) {
         aoiInput.value = JSON.stringify(geoJson);
-        updateDroidStatus("Zone d'Intérêt (AOI) capturée. Préparation du script.", 60);
+        updateDroidStatus("GEE-Droid : Zone d'Intérêt (AOI) capturée. Préparation du script.", 60);
     }
 
     // Function to dynamically update specific parameters based on analysis type
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlContent = `
                 <div class="input-group">
                     <label for="desertIndexType">Indice de dégradation à évaluer :</label>
-                    <select id="desertIndexType" class="droid-select">
+                    <select id="desertIndexType" class="console-select">
                         <option value="NDVI_Change">Changement de l'Indice de Végétation (NDVI)</option>
                         <option value="Albedo_Change">Changement d'Albédo (Réflectance de surface)</option>
                         <option value="LST_Change">Changement de Température de Surface (LST)</option>
@@ -149,14 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="input-group">
                     <label for="desertThreshold">Seuil de dégradation (ex: -0.1 pour NDVI) :</label>
-                    <input type="number" id="desertThreshold" step="0.01" value="-0.1" class="droid-input">
+                    <input type="number" id="desertThreshold" step="0.01" value="-0.1" class="console-input">
                 </div>
             `;
         } else if (analysis === 'waterStress') {
             htmlContent = `
                 <div class="input-group">
                     <label for="waterStressIndex">Indice de stress hydrique :</label>
-                    <select id="waterStressIndex" class="droid-select">
+                    <select id="waterStressIndex" class="console-select">
                         <option value="NDWI">NDWI (Indice d'Eau Normalisé)</option>
                         <option value="NDMI">NDMI (Indice d'Humidité Normalisé)</option>
                         <option value="LSWI">LSWI (Indice d'Eau de Surface Terrestre)</option>
@@ -165,14 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="input-group">
                     <label for="waterStressThreshold">Seuil de stress (ex: 0 pour NDWI, -0.2 pour NDMI) :</label>
-                    <input type="number" id="waterStressThreshold" step="0.01" value="0" class="droid-input">
+                    <input type="number" id="waterStressThreshold" step="0.01" value="0" class="console-input">
                 </div>
             `;
         } else if (analysis === 'cropMonitoring') {
             htmlContent = `
                 <div class="input-group">
                     <label for="cropVegetationIndex">Indice de végétation pour les cultures :</label>
-                    <select id="cropVegetationIndex" class="droid-select">
+                    <select id="cropVegetationIndex" class="console-select">
                         <option value="NDVI">NDVI (Indice de Végétation)</option>
                         <option value="EVI">EVI (Indice de Végétation Amélioré)</option>
                         <option value="GNDVI">GNDVI (Indice de Végétation Vert Normalisé)</option>
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="input-group">
                     <label for="cloudFilter">Couverture nuageuse maximale (%) :</label>
-                    <input type="number" id="cloudFilter" min="0" max="100" value="10" class="droid-input">
+                    <input type="number" id="cloudFilter" min="0" max="100" value="10" class="console-input">
                     <small class="info-text">Seules les images avec moins de X% de nuages seront utilisées.</small>
                 </div>
                 <div class="input-group">
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add event listeners to newly created specific parameters
         specificParamsDiv.querySelectorAll('input, select').forEach(input => {
             input.addEventListener('input', () => {
-                updateDroidStatus("Paramètres spécifiques calibrés. Mise à jour du script.", 40);
+                updateDroidStatus("GEE-Droid : Paramètres spécifiques calibrés. Mise à jour du script.", 40);
                 generateScript();
             });
         });
@@ -203,8 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to update droid status and progress bar
     function updateDroidStatus(message, progress) {
-        droidStatus.textContent = `GEE-Droid : ${message}`;
-        if (progress > 0) {
+        droidStatus.textContent = message;
+        if (progress >= 0) { // Always show progress bar when status is updated
             progressBarContainer.style.display = 'block';
             progressBar.style.width = `${progress}%`;
         } else {
@@ -219,11 +219,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const analysisType = analysisTypeSelect.value;
         if (!analysisType) {
             geeScriptOutput.value = '';
-            updateDroidStatus("Aucune analyse sélectionnée. En attente d'instructions.", 0);
+            updateDroidStatus("GEE-Droid : Aucune analyse sélectionnée. En attente d'instructions.", 0);
             return;
         }
 
-        updateDroidStatus("Traitement en cours... 10%", 10);
+        updateDroidStatus("GEE-Droid : Traitement en cours... 10%", 10);
 
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
@@ -238,20 +238,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!['FeatureCollection', 'Feature', 'Geometry'].includes(parsedAoi.type)) {
                 aoi = `// ERREUR: GeoJSON invalide. Veuillez coller un GeoJSON valide ici ou dessiner sur la carte.
 var aoi = ee.Geometry.Point([0, 0]); // Point par défaut en cas d'erreur
-print('ERREUR: GeoJSON non valide. Veuillez vérifier votre saisie ou le tracé sur la carte.');`;
-                updateDroidStatus("Erreur GeoJSON : Format non reconnu. Veuillez corriger.", 100);
+print("ERREUR: GeoJSON non valide. Veuillez vérifier votre saisie ou le tracé sur la carte.");`;
+                updateDroidStatus("GEE-Droid : Erreur GeoJSON - Format non reconnu. Veuillez corriger.", 100);
             } else {
                 aoi = `var aoi = ee.FeatureCollection(${JSON.stringify(parsedAoi)}); // Zone d'Intérêt (AOI) définie par l'utilisateur`;
                 if (parsedAoi.type === 'Geometry') {
                      aoi = `var aoi = ee.FeatureCollection([ee.Feature(${JSON.stringify(parsedAoi)})]); // Géométrie convertie en FeatureCollection pour Earth Engine`;
                 }
-                updateDroidStatus("GeoJSON validé. Initialisation des capteurs.", 20);
+                updateDroidStatus("GEE-Droid : GeoJSON validé. Initialisation des capteurs.", 20);
             }
         } catch (e) {
             aoi = `// ERREUR: GeoJSON invalide ou mal formaté. Veuillez coller un GeoJSON valide ici ou dessiner sur la carte.
 var aoi = ee.Geometry.Point([0, 0]); // Point par défaut en cas d'erreur
-print('ERREUR: GeoJSON mal formaté. Détails: ${e.message}');`;
-            updateDroidStatus(`Erreur GeoJSON : Problème de formatage. Détails: ${e.message.substring(0, 50)}...`, 100);
+print("ERREUR: GeoJSON mal formaté. Détails: ${e.message.replace(/"/g, '\\"')}");`; // Escape double quotes for GEE print
+            updateDroidStatus(`GEE-Droid : Erreur GeoJSON - Problème de formatage. Détails: ${e.message.substring(0, 50)}...`, 100);
         }
 
         let script = `
@@ -365,8 +365,8 @@ if ('${satelliteSource}' === 'S2') {
     };
 }
 
-if (!collection || collection.size().getInfo() === 0) {
-    print('GEE-Droid Alerte : Aucune image satellite disponible après filtrage. Veuillez ajuster la période, l\'AOI ou le filtre nuageux.');
+if (collection.size().getInfo() === 0) { // Corrected error: using .getInfo() for client-side check
+    print("GEE-Droid Alerte : Aucune image satellite disponible après filtrage. Veuillez ajuster la période, l'AOI ou le filtre nuageux.");
 } else {
     print('GEE-Droid Statut : ' + collection.size() + ' images disponibles pour traitement après filtrage atmosphérique.');
 
@@ -397,7 +397,7 @@ if (!collection || collection.size().getInfo() === 0) {
     ).filter(ee.Filter.notNull(['system:time_start'])); // Supprime les éléments null de la collection
 
     if (monthlyComposites.size().getInfo() === 0) {
-        print('GEE-Droid Alerte : Aucun composite mensuel généré. Vérifiez la période ou le mois cible.');
+        print("GEE-Droid Alerte : Aucun composite mensuel généré. Vérifiez la période ou le mois cible.");
     } else {
         print('GEE-Droid Statut : ' + monthlyComposites.size() + ' composites mensuels/ciblés créés.');
         var composite = monthlyComposites.median(); // La médiane de tous les composites générés pour une vue globale
@@ -424,7 +424,7 @@ if (!collection || collection.size().getInfo() === 0) {
         // Si un mois cible est choisi, comparer les années pour ce mois
         var yearsList = monthlyComposites.aggregate_array('year').distinct();
         if (yearsList.size().lt(2).getInfo()) { // Utiliser .getInfo() pour les opérations côté client
-            print('GEE-Droid Avertissement : Pas assez d\'années (moins de 2) pour comparer des changements pour le mois cible. L\'analyse peut être limitée.');
+            print("GEE-Droid Avertissement : Pas assez d'années (moins de 2) pour comparer des changements pour le mois cible. L'analyse peut être limitée.");
             compositeBefore = monthlyComposites.first(); // Utilise le premier composite disponible comme 'avant'
             compositeAfter = monthlyComposites.sort('system:time_start', false).first(); // Utilise le dernier composite disponible comme 'après'
         } else {
@@ -441,8 +441,8 @@ if (!collection || collection.size().getInfo() === 0) {
             var ndviBefore = compositeBefore.normalizedDifference(bands['NDVI']).rename('NDVI_Before');
             var ndviAfter = compositeAfter.normalizedDifference(bands['NDVI']).rename('NDVI_After');
             desertIndex = ndviAfter.subtract(ndviBefore).rename('Changement_NDVI');
-            visParams = {min: -0.2, max: 0.2, palette: ['#A52A2A', '#DDA0DD', '#90EE90', '#228B22']}; // Rouge (dégradation) à Vert (amélioration)
-            print('GEE-Droid : Calcul du changement de NDVI (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).');
+            visParams = {min: -0.2, max: 0.2, palette: ['#FF0000', '#FFA500', '#FFFF00', '#ADFF2F', '#008000']}; // Rouge (dégradation) à Vert (amélioration)
+            print("GEE-Droid : Calcul du changement de NDVI (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).");
         } else if ('${desertIndexType}' === 'Albedo_Change') {
             var albedoBands;
             if ('${satelliteSource}' === 'S2') albedoBands = ['B2', 'B3', 'B4', 'B8', 'B11', 'B12'];
@@ -454,10 +454,10 @@ if (!collection || collection.size().getInfo() === 0) {
                 var albedoBefore = compositeBefore.select(albedoBands).mean().rename('Albedo_Before');
                 var albedoAfter = compositeAfter.select(albedoBands).mean().rename('Albedo_After');
                 desertIndex = albedoAfter.subtract(albedoBefore).rename('Changement_Albedo');
-                visParams = {min: -0.1, max: 0.1, palette: ['#6B8E23', '#F0E68C', '#B22222']}; // Vert (baisse, bon) à Rouge (augmentation, dégradation)
-                print('GEE-Droid : Calcul du changement d\'Albédo (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).');
+                visParams = {min: -0.1, max: 0.1, palette: ['#008000', '#FFFF00', '#FF0000']}; // Vert (baisse, bon) à Rouge (augmentation, dégradation)
+                print("GEE-Droid : Calcul du changement d'Albédo (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).");
             } else {
-                print('GEE-Droid Erreur : Bandes d\'albédo non disponibles pour la source satellite sélectionnée.');
+                print("GEE-Droid Erreur : Bandes d'albédo non disponibles pour la source satellite sélectionnée.");
                 desertIndex = ee.Image(0).rename('Changement_Albedo');
             }
         } else if ('${desertIndexType}' === 'LST_Change') {
@@ -496,7 +496,7 @@ if (!collection || collection.size().getInfo() === 0) {
                 lstAfter = monthlyLSTComposites.filterDate(midDateLST, endDate).median();
             } else {
                  if (lstYears.size().lt(2).getInfo()) {
-                    print('GEE-Droid Avertissement : Pas assez d\'années (moins de 2) pour l\'analyse LST pour le mois cible. L\'analyse peut être limitée.');
+                    print("GEE-Droid Avertissement : Pas assez d'années (moins de 2) pour l'analyse LST pour le mois cible. L'analyse peut être limitée.");
                     lstBefore = monthlyLSTComposites.first();
                     lstAfter = monthlyLSTComposites.sort('system:time_start', false).first();
                 } else {
@@ -509,10 +509,10 @@ if (!collection || collection.size().getInfo() === 0) {
 
             if (lstBefore && lstAfter && lstBefore.getInfo() !== null && lstAfter.getInfo() !== null) {
                 desertIndex = lstAfter.subtract(lstBefore).rename('Changement_LST_Celsius');
-                visParams = {min: -3, max: 3, palette: ['#6495ED', '#FFFFFF', '#DC143C']}; // Bleu (refroidissement) à Rouge (réchauffement, dégradation)
-                print('GEE-Droid : Calcul du changement de LST (Celsius) via MODIS (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).');
+                visParams = {min: -3, max: 3, palette: ['#0000FF', '#FFFFFF', '#FF0000']}; // Bleu (refroidissement) à Rouge (réchauffement, dégradation)
+                print("GEE-Droid : Calcul du changement de LST (Celsius) via MODIS (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).");
             } else {
-                print('GEE-Droid Erreur : Données MODIS LST insuffisantes pour calculer le changement. Ajustez les dates.');
+                print("GEE-Droid Erreur : Données MODIS LST insuffisantes pour calculer le changement. Ajustez les dates.");
                 desertIndex = ee.Image(0).rename('Changement_LST');
             }
         }
@@ -535,12 +535,12 @@ if (!collection || collection.size().getInfo() === 0) {
                 description: 'AOI_Limite_GEE_Droid',
                 fileFormat: 'GeoJSON'
             });
-            print('GEE-Droid : Exportation des résultats vers Google Drive initiée.');
+            print("GEE-Droid : Exportation des résultats vers Google Drive initiée.");
         } else {
-            print('GEE-Droid Alerte : Impossible de calculer l\'indice de désertification. Vérifiez les paramètres et les données.');
+            print("GEE-Droid Alerte : Impossible de calculer l'indice de désertification. Vérifiez les paramètres et les données.");
         }
     } else {
-        print('GEE-Droid Alerte : Composites "avant" ou "après" manquants pour le calcul de changement. Ajustez la période ou le mois cible.');
+        print("GEE-Droid Alerte : Composites 'avant' ou 'après' manquants pour le calcul de changement. Ajustez la période ou le mois cible.");
     }
 `;
         } else if (analysisType === 'waterStress') {
@@ -548,22 +548,22 @@ if (!collection || collection.size().getInfo() === 0) {
             const waterStressThreshold = document.getElementById('waterStressThreshold').value;
 
             script += `
-    // 6. Calcul de l'indice de stress hydrique sur le composite médian
+    // 6. Calcul de l'indice de stress hydrique sur le composite médian (selon le mois cible)
     var waterIndex;
     var visParams;
 
     if (composite.getInfo() === null) {
-        print('GEE-Droid Erreur : Composite médian vide pour l\'analyse du stress hydrique. Vérifiez vos données.');
+        print("GEE-Droid Erreur : Composite médian vide pour l'analyse du stress hydrique. Vérifiez vos données.");
         waterIndex = ee.Image(0).rename('Stress_Hydrique');
     } else {
         if ('${waterStressIndex}' === 'NDWI') {
             waterIndex = composite.normalizedDifference(bands['NDWI']).rename('NDWI');
-            visParams = {min: -1, max: 1, palette: ['#8B4513', '#FFD700', '#98FB98', '#4682B4', '#000080']}; // Brun (sec) à Bleu Foncé (eau)
-            print('GEE-Droid : Calcul de l\'indice NDWI (basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).');
+            visParams = {min: -1, max: 1, palette: ['#FF0000', '#FFA500', '#FFFF00', '#ADFF2F', '#0000FF']}; // Rouge (sec) à Bleu Foncé (eau)
+            print("GEE-Droid : Calcul de l'indice NDWI (basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).");
         } else if ('${waterStressIndex}' === 'NDMI') {
             waterIndex = composite.normalizedDifference(bands['NDMI']).rename('NDMI');
-            visParams = {min: -1, max: 1, palette: ['#A0522D', '#F4A460', '#9ACD32', '#6A5ACD']}; // Marron (sec) à Violet Bleu (humide)
-            print('GEE-Droid : Calcul de l\'indice NDMI (basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).');
+            visParams = {min: -1, max: 1, palette: ['#8B4513', '#F4A460', '#9ACD32', '#4169E1']}; // Marron (sec) à Bleu Royal (humide)
+            print("GEE-Droid : Calcul de l'indice NDMI (basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).");
         } else if ('${waterStressIndex}' === 'LSWI') {
             var nirBand = bands['NDMI'][0];
             var swir1Band;
@@ -574,21 +574,21 @@ if (!collection || collection.size().getInfo() === 0) {
 
             if (swir1Band) {
                 waterIndex = composite.normalizedDifference([nirBand, swir1Band]).rename('LSWI');
-                visParams = {min: -1, max: 1, palette: ['#A0522D', '#F4A460', '#9ACD32', '#6A5ACD']};
-                print('GEE-Droid : Calcul de l\'indice LSWI (basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).');
+                visParams = {min: -1, max: 1, palette: ['#8B4513', '#F4A460', '#9ACD32', '#4169E1']};
+                print("GEE-Droid : Calcul de l'indice LSWI (basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).");
             } else {
-                print('GEE-Droid Erreur : Bande SWIR1 non disponible pour LSWI avec la source satellite sélectionnée.');
+                print("GEE-Droid Erreur : Bande SWIR1 non disponible pour LSWI avec la source satellite sélectionnée.");
                 waterIndex = ee.Image(0).rename('LSWI');
             }
         } else if ('${waterStressIndex}' === 'TCI') {
             if ('${satelliteSource}' !== 'MODIS') {
-                print('GEE-Droid Avertissement : L\'indice TCI est plus précis avec les données de température de surface (MODIS). Proxy utilisé avec les données de réflectance.');
+                print("GEE-Droid Avertissement : L'indice TCI est plus précis avec les données de température de surface (MODIS). Proxy utilisé avec les données de réflectance.");
                 if (bands['NDMI']) {
                      waterIndex = composite.normalizedDifference(bands['NDMI']).multiply(-1).rename('Proxy_TCI_via_NDMI'); // Inverser NDMI comme proxy
-                     visParams = {min: -0.5, max: 0.5, palette: ['#6495ED', '#FFFFFF', '#DC143C']}; // Bleu (moins stress) à Rouge (plus stress)
-                     print('GEE-Droid : Calcul de Proxy TCI (via NDMI, basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).');
+                     visParams = {min: -0.5, max: 0.5, palette: ['#0000FF', '#FFFFFF', '#FF0000']}; // Bleu (moins stress) à Rouge (plus stress)
+                     print("GEE-Droid : Calcul de Proxy TCI (via NDMI, basé sur médiane ${targetMonth === 'all' ? 'annuelle' : 'du mois cible'}).");
                 } else {
-                    print('GEE-Droid Erreur : Bandes NDMI non disponibles pour Proxy TCI.');
+                    print("GEE-Droid Erreur : Bandes NDMI non disponibles pour Proxy TCI.");
                     waterIndex = ee.Image(0).rename('Proxy_TCI');
                 }
             } else {
@@ -626,10 +626,10 @@ if (!collection || collection.size().getInfo() === 0) {
 
                 if (meanLST && minLST && maxLST && meanLST.getInfo() !== null && minLST.getInfo() !== null && maxLST.getInfo() !== null) {
                     waterIndex = meanLST.subtract(minLST).divide(maxLST.subtract(minLST)).multiply(100).rename('TCI');
-                    visParams = {min: 0, max: 100, palette: ['#6B8E23', '#F0E68C', '#B22222']}; // Vert (pas de stress) à Rouge (stress élevé)
-                    print('GEE-Droid : Calcul de l\'indice TCI (Temperature Condition Index) via MODIS (basé sur médianes ${targetMonth === 'all' ? 'annuelles' : 'du mois cible'}).');
+                    visParams = {min: 0, max: 100, palette: ['#008000', '#FFFF00', '#FF0000']}; // Vert (pas de stress) à Rouge (stress élevé)
+                    print("GEE-Droid : Calcul de l'indice TCI (Temperature Condition Index) via MODIS (basé sur médianes ${targetMonth === 'all' ? 'annuelles' : 'du mois cible'}).");
                 } else {
-                    print('GEE-Droid Erreur : Données LST insuffisantes pour TCI. Vérifiez les données MODIS.');
+                    print("GEE-Droid Erreur : Données LST insuffisantes pour TCI. Vérifiez les données MODIS.");
                     waterIndex = ee.Image(0).rename('TCI');
                 }
             }
@@ -653,9 +653,9 @@ if (!collection || collection.size().getInfo() === 0) {
                 description: 'AOI_Limite_GEE_Droid',
                 fileFormat: 'GeoJSON'
             });
-            print('GEE-Droid : Exportation des résultats vers Google Drive initiée.');
+            print("GEE-Droid : Exportation des résultats vers Google Drive initiée.");
         } else {
-            print('GEE-Droid Alerte : Impossible de calculer l\'indice de stress hydrique. Vérifiez les paramètres et les données.');
+            print("GEE-Droid Alerte : Impossible de calculer l'indice de stress hydrique. Vérifiez les paramètres et les données.");
         }
     }
 `;
@@ -669,7 +669,7 @@ if (!collection || collection.size().getInfo() === 0) {
     var visParams;
 
     if (monthlyComposites.size().getInfo() === 0) {
-        print('GEE-Droid Erreur : Aucun composite mensuel pour l\'analyse des cultures. Vérifiez les données.');
+        print("GEE-Droid Erreur : Aucun composite mensuel pour l'analyse des cultures. Vérifiez les données.");
         cropIndexCollection = ee.ImageCollection([]); // Collection vide
     } else {
         if ('${cropVegetationIndex}' === 'NDVI') {
@@ -678,7 +678,7 @@ if (!collection || collection.size().getInfo() === 0) {
                             .copyProperties(image, ['system:time_start', 'year', 'month', 'count']);
             });
             visParams = {min: 0, max: 1, palette: ['#8B4513', '#FFD700', '#9ACD32', '#228B22']}; // Brun (sol nu) à Vert Foncé (végétation dense)
-            print('GEE-Droid : Calcul de l\'indice NDVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).');
+            print("GEE-Droid : Calcul de l'indice NDVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).");
         } else if ('${cropVegetationIndex}' === 'EVI') {
             cropIndexCollection = monthlyComposites.map(function(image){
                 if (bands['EVI']) {
@@ -693,15 +693,15 @@ if (!collection || collection.size().getInfo() === 0) {
                     return ee.Image(0).rename('EVI').set('system:time_start', image.get('system:time_start'));
                 }
             });
-            visParams = {min: 0, max: 1, palette: ['#DC143C', '#F4A460', '#9ACD32', '#006400']};
-            print('GEE-Droid : Calcul de l\'indice EVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).');
+            visParams = {min: 0, max: 1, palette: ['#FF0000', '#FFA500', '#9ACD32', '#006400']};
+            print("GEE-Droid : Calcul de l'indice EVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).");
         } else if ('${cropVegetationIndex}' === 'GNDVI') {
             cropIndexCollection = monthlyComposites.map(function(image){
                 return image.normalizedDifference(bands['GNDVI']).rename('GNDVI')
                             .copyProperties(image, ['system:time_start', 'year', 'month', 'count']);
             });
             visParams = {min: 0, max: 1, palette: ['#B22222', '#F0E68C', '#ADFF2F', '#32CD32']};
-            print('GEE-Droid : Calcul de l\'indice GNDVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).');
+            print("GEE-Droid : Calcul de l'indice GNDVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).");
         } else if ('${cropVegetationIndex}' === 'SAVI') {
             var L_savi = 0.5; // Facteur d'ajustement du sol (typiquement 0.5)
             cropIndexCollection = monthlyComposites.map(function(image){
@@ -718,7 +718,7 @@ if (!collection || collection.size().getInfo() === 0) {
                 }
             });
             visParams = {min: 0, max: 1, palette: ['#8B4513', '#F4A460', '#6B8E23', '#006400']};
-            print('GEE-Droid : Calcul de l\'indice SAVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).');
+            print("GEE-Droid : Calcul de l'indice SAVI pour le suivi des cultures (basé sur médianes ${targetMonth === 'all' ? 'mensuelles' : 'du mois cible'}).");
         }
 
         if (cropIndexCollection.size().getInfo() > 0) {
@@ -734,7 +734,7 @@ if (!collection || collection.size().getInfo() === 0) {
                     scale: ee.Image(monthlyComposites.first()).projection().nominalScale().getInfo(), // Échelle du premier composite
                     xProperty: 'system:time_start'
                 }).setOptions({
-                    title: 'GEE-Droid : Évolution du ' + '${cropVegetationIndex}' + '${targetMonth === 'all' ? '' : ' (Mois ' + targetMonth + ')'}',
+                    title: "GEE-Droid : Évolution du " + '${cropVegetationIndex}' + '${targetMonth === 'all' ? '' : ' (Mois ' + targetMonth + ')'}',
                     vAxis: {title: '${cropVegetationIndex}'},
                     hAxis: {title: 'Date'},
                     legend: {position: 'none'},
@@ -743,7 +743,7 @@ if (!collection || collection.size().getInfo() === 0) {
                     colors: ['${visParams.palette[visParams.palette.length-1]}'] // Couleur du graphique
                 });
                 print(chart);
-                print('GEE-Droid : Graphique d\'évolution temporelle généré. Veuillez le consulter dans l\'éditeur GEE.');
+                print("GEE-Droid : Graphique d'évolution temporelle généré. Veuillez le consulter dans l'éditeur GEE.");
             }
 
             // 8. Exportation du TIFF (composite médian global)
@@ -761,9 +761,9 @@ if (!collection || collection.size().getInfo() === 0) {
                 description: 'AOI_Limite_GEE_Droid',
                 fileFormat: 'GeoJSON'
             });
-            print('GEE-Droid : Exportation des résultats vers Google Drive initiée.');
+            print("GEE-Droid : Exportation des résultats vers Google Drive initiée.");
         } else {
-             print('GEE-Droid Alerte : Aucun indice de culture n\'a pu être calculé pour le composite. Vérifiez les paramètres.');
+             print("GEE-Droid Alerte : Aucun indice de culture n'a pu être calculé pour le composite. Vérifiez les paramètres.");
         }
     }
 `;
@@ -775,18 +775,18 @@ if (!collection || collection.size().getInfo() === 0) {
         `;
 
         geeScriptOutput.value = script.trim();
-        updateDroidStatus("Protocole d'analyse complet. Prêt pour le transfert.", 100);
+        updateDroidStatus("GEE-Droid : Protocole d'analyse complet. Prêt pour le transfert.", 100);
     }
 
     // Copy script to clipboard
     copyScriptButton.addEventListener('click', () => {
         geeScriptOutput.select();
         document.execCommand('copy');
-        updateDroidStatus("Script copié dans le presse-papiers. Bonne mission !", 100);
-        setTimeout(() => updateDroidStatus("GEE-Droid : En attente de nouvelle commande.", 0), 3000); // Reset status
+        updateDroidStatus("GEE-Droid : Script copié dans le presse-papiers. Bonne mission !", 100);
+        setTimeout(() => updateDroidStatus("GEE-Droid : Système en ligne. En attente de nouvelle commande.", 0), 3000); // Reset status
     });
 
     // Initial script generation on page load (if a default analysis is selected)
     analysisTypeSelect.dispatchEvent(new Event('change'));
-    updateDroidStatus("GEE-Droid : Initialisation terminée. En attente de vos instructions.", 0);
+    updateDroidStatus("GEE-Droid : Initialisation terminée. Système en ligne.", 0);
 });
